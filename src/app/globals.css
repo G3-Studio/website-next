@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-serif;
+}
+
+main {
+  @apply max-h-screen;
+}
+
+.title {
+  @apply font-sans text-2xl font-bold;
+}
+
+.title > span {
+  @apply bg-[#fcd4a9] text-black px-1;
+}
