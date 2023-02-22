@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function ClientComponent({ children }: { children: any }) {
+export default function WorkshopLoadBar({ children }: { children: any }) {
     useEffect(() => {
         document.onscroll = function(){ 
             let pos = getVerticalScrollPercentage(document.body);
