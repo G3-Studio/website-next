@@ -1,11 +1,18 @@
+"use client";
 import { TextParser } from '@/lib/textParser'
+import WorkshopEditComponentContainer from '@/components/WorkshopEditComponentContainer';
+import WorkshopEditInput from '../WorkshopEditInput';
 
-export default function WorkshopText({ id, data }: { id: number, data: any }) {
+export default function WorkshopText({ id, data }: { id: string, data: any }) {
     return (
-        <p key={id} className="ws-text" dangerouslySetInnerHTML={{ __html: new TextParser(data.text).parse() }}></p>
+        <p key={id} id={id} className="p-1 ws-text" dangerouslySetInnerHTML={{ __html: new TextParser(data.text).parse() }}></p>
     );
 }
 
-export function WorkshopTextEdit(){
-
+export function WorkshopTextEdit(params: {id: string, data: any, events: any}) {
+    return (
+        <WorkshopEditComponentContainer>
+            <WorkshopEditInput id={params.id} title="Texte" placeholder="Ceci est un test !" data={params.data.text} dataField="text" events={params.events}  />
+        </WorkshopEditComponentContainer>
+    )
 }

@@ -1,18 +1,15 @@
+"use client";
 import WorkshopTitle from "./workshop/WorkshopTitle";
 import WorkshopText from "./workshop/WorkshopText";
-// import WorkshopImage from "./workshops/title";
 
-function chooseComponent(component: any) : JSX.Element {
+function chooseComponent(component: any, id: string) : JSX.Element {
     switch (component.type) {
         case "title":
-            return <WorkshopTitle id={component.id} data={JSON.parse(component.data)} />
+            return <WorkshopTitle id={id} data={JSON.parse(component.data)} />
         case "text":
-            return <WorkshopText id={component.id} data={JSON.parse(component.data)} />
-
+            return <WorkshopText id={id} data={JSON.parse(component.data)} />
         default:
             return <></>
-        // case "image":
-        //     return <WorkshopImage data={component.data} />
     }
 }
 
@@ -21,28 +18,31 @@ export default function WorkshopRenderer({ workshop }: { workshop: any }) {
     return (
         <>
             {workshop.components.map((component: any) => {
-                let mainComponent = chooseComponent(component);
-                let subComponents : Array<JSX.Element> = []
+                let identifier = "renderer-components-" + component.id;
+                let mainComponent = chooseComponent(component, identifier);
+                let subcomponents : Array<JSX.Element> = []
                 
-                if(!component.subComponents || component.subComponents.length === 0) {
+                if(!component.subcomponents || component.subcomponents.length === 0) {
                     return mainComponent;
                 }
 
-                component.subComponents.map((subComponent: any) => {
-                    subComponents.push(chooseComponent(subComponent));
+                component.subcomponents.map((subcomponent: any) => {
+                    identifier += "-subcomponents-" + subcomponent.id;
+                    subcomponents.push(chooseComponent(subcomponent, identifier));
 
-                    if(!subComponent.subComponents || subComponent.subComponents.length === 0) {
+                    if(!subcomponent.subcomponents || subcomponent.subcomponents.length === 0) {
                         return;
                     }
-                    subComponent.subComponents.map((subSubComponent: any) => {
-                        subComponents.push(chooseComponent(subSubComponent));
+                    subcomponent.subcomponents.map((subsubcomponent: any) => {
+                        identifier += "-subsubcomponents-" + subsubcomponent.id;
+                        subcomponents.push(chooseComponent(subsubcomponent, identifier));
                     })
                 })
 
                 return (
                     <>
                         {mainComponent}
-                        {subComponents}
+                        {subcomponents}
                     </>
                 )
             })}

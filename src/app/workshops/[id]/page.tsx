@@ -10,6 +10,13 @@ export default async function Workshop({ params }: { params: { id: number } }) {
     },
     include: {
       components: {
+        include: {
+          subcomponents: {
+            include: {
+              subsubcomponents: true,
+            },
+          },
+        },  
       },
     },
   });

@@ -9,12 +9,30 @@ export default async function EditWorkshop({ params }: { params: { id: number } 
       id: +params.id,
     },
     include: {
-      components: {},
+      components: {
+        orderBy: {
+          order: "asc",
+        },
+        include: {
+          subcomponents: {
+            orderBy: {
+              order: "asc",
+            },
+            include: {
+              subsubcomponents: {
+                orderBy: {
+                  order: "asc",
+                },
+              },
+            },
+          },
+        },  
+      },
     },
   });
 
   return (
-    <WorkshopClient workshop={workshop}>
+    <WorkshopClient workshop={workshop} disableBar={true} >
       <div className="flex justify-center w-full min-h-screen bg-gray-100 content">
         <WorkshopLiveEdit workshop={workshop} />
       </div>

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { TextParser } from '@/lib/textParser';
 
-export default function Header({ title = null, session = null }: { title: any, session: any }) {
+export default function Header({ title, session, disableBar }: { title?: any, session?: any, disableBar: any }) {
     return (
         
         <header className="fixed flex flex-col w-full h-16">
@@ -24,12 +24,12 @@ export default function Header({ title = null, session = null }: { title: any, s
                 }
             </div>
             </div>
-            <div className="relative w-full">
+            {!disableBar ?? <div className="relative w-full">
                 <div className="h-1 bg-gray-300">
                     <div className="w-0 h-1 bg-gradient-to-r from-official-yellow to-official-red progress-bar" />
                 </div>
                 <div className="absolute hidden w-full h-5 bg-red-600 top-1" />
-            </div>
+            </div>}
         </header>
     );
 }

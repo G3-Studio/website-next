@@ -19,11 +19,11 @@ main {
 }
 
 .ws-title {
-  @apply bg-[#fff2cc] font-sans text-lg font-semibold italic px-1;
+  @apply bg-[#fff2cc] font-sans text-lg font-semibold italic px-1 w-fit;
 }
 
 .ws-text h.green {
-  @apply bg-[#b2feb7] text-black px-1;
+  @apply bg-[#b2feb7] text-black px-1 w-fit;
 }
 
 .ws-text h.red {
@@ -154,4 +154,13 @@ main {
   100% {
     transform: rotate(360deg);
   }
+}
+
+
+/* ----------------------------------------------------------------
+                    CUSTOM SELECTED
+------------------------------------------------------------------ */
+
+.edit-selected {
+  @apply bg-green-400 bg-opacity-50 rounded-lg;
 }
