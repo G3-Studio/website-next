@@ -5,3 +5,7 @@ export default function WorkshopText({ id, data }: { id: number, data: any }) {
         <p key={id} className="ws-text" dangerouslySetInnerHTML={{ __html: new TextParser(data.text).parse() }}></p>
     );
 }
+
+export function WorkshopTextEdit(){
+
+}
