@@ -7,7 +7,7 @@ export default async function EditWorkshop({ params }: { params: { id: number } 
   if(isNaN(params.id)) return <div>Erreur 500</div>;
   const workshop = await prisma.workshop.findUnique({
     where: {
-      id: params.id,
+      id: +params.id,
     },
     include: {
       components: {
