@@ -6,7 +6,7 @@ import WorkshopLiveEdit from "@/components/WorkshopLiveEdit";
 export default async function EditWorkshop({ params }: { params: { id: number } }) {
   const workshop = await prisma.workshop.findUnique({
     where: {
-      id: +params.id,
+      id: Math.floor(params.id),
     },
     include: {
       components: {

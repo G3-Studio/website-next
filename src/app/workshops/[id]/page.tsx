@@ -6,14 +6,24 @@ import WorkshopEditBtn from '@/components/WorkshopEditBtn';
 export default async function Workshop({ params }: { params: { id: number } }) {
   const workshop = await prisma.workshop.findUnique({
     where: {
-      id: +params.id,
+      id: Math.floor(params.id),
     },
     include: {
       components: {
+        orderBy: {
+          order: "asc",
+        },
         include: {
           subcomponents: {
+            orderBy: {
+              order: "asc",
+            },
             include: {
-              subsubcomponents: true,
+              subsubcomponents: {
+                orderBy: {
+                  order: "asc",
+                },
+              },
             },
           },
         },  

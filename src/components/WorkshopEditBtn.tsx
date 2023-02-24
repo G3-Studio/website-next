@@ -9,8 +9,6 @@ export default function WorkshopEditBtn(params: { id: number }) {
         return null;
     }
 
-    console.log(params.id)
-
     return (
         <Link href={'/workshops/' + params.id.toString() + '/edit'} className="fixed flex items-center justify-center w-12 h-12 rounded-full bottom-4 right-4 bg-official-yellow">
           <svg className="w-6 h-6 m-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
