@@ -4,9 +4,10 @@ import WorkshopClient from '@/components/WorkshopClient';
 import WorkshopEditBtn from '@/components/WorkshopEditBtn';
 
 export default async function Workshop({ params }: { params: { id: number } }) {
+  if(isNaN(params.id)) return <div>Erreur 500</div>;
   const workshop = await prisma.workshop.findUnique({
     where: {
-      id: Math.floor(params.id),
+      id: params.id,
     },
     include: {
       components: {
