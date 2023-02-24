@@ -21,6 +21,8 @@ function reducer(state: any, action: any) {
       return action.workshop;
     case "reorder":
       return reorder(state);
+    case "delete":
+      return deleteComponent(state, action.key);
     default:
       return state;
   }
@@ -74,13 +76,68 @@ function modifyWorkshop(state: any, key: string, value: any) {
   return newState;
 }
 
+function deleteComponent(state: any, key: any) {
+  // key from components.1.subcomponents.2.data to array
+  let keyArray = key.split("-");
+
+  // do not mutate the state in order for react to detect the change
+  let newState = JSON.parse(JSON.stringify(state));
+
+  // get the data and replace the value in the state
+  let data = newState;
+  for (let i = 0; i < keyArray.length; i++) {
+    // if keyArray[i] can be parsed as int then search in the array the object id
+    if (!isNaN(parseInt(keyArray[i]))) {
+      data = data.find((obj: any) => obj.id === parseInt(keyArray[i]));
+    } else {
+      data = data[keyArray[i]];
+    }
+    
+    if (i === keyArray.length - 1) {
+      // delete the component in newState
+      let index = newState.components.findIndex((obj: any) => obj.id === data.id);
+      newState.components.splice(index, 1);
+      
+    }
+  }
+
+  return newState;
+}
+
+// Test delete component
+deleteComponent(
+  {
+    components: [
+      {
+        id: 1,
+        type: "title",
+        data: { title: "Titre 1" },
+        subcomponents: [
+          {
+            id: 2,
+            type: "text",
+            data: { text: "Texte 1" },
+            subsubcomponents: [
+              {
+                id: 3,
+                type: "text",
+                data: { text: "Texte 2" },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  "components-1-subcomponents-2"
+)
+
 function chooseComponent(component: any, id: string, events: any): JSX.Element {
   switch (component.type) {
     case "title":
       return <WorkshopTitleEdit id={id} data={JSON.parse(component.data)} events={events} />;
     case "text":
       return <WorkshopTextEdit id={id} data={JSON.parse(component.data)} events={events} />;
-      events
     default:
       return <></>;
   }
@@ -89,6 +146,7 @@ function chooseComponent(component: any, id: string, events: any): JSX.Element {
 export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
   const [editWorkshop, dispatch] = useReducer(reducer, workshop);
   const [selected, setSelected] = useState("");
+  
   useEffect(() => {
     // remove all edit-selected classes
     let elements = document.querySelectorAll(".edit-selected");
@@ -127,7 +185,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     // update workshop object
     dispatch({ type: "modify", key: id, value: value });
 
-    // TODO: send to websocket to update the database and the other clients
+    // TODO: send to websocket to update the dataidentifier and the other clients
 
   }
 
@@ -140,6 +198,18 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
 
   function hoverLeave(e: Event) {
     setSelected("");
+  }
+
+  function deleteComponent(e: Event) {
+    let element = e.target as HTMLElement;
+    // remove the -delete suffix
+    let id = element.id.substring(0, element.id.length - 7);
+
+    console.log(element.id);
+    
+    dispatch({ type: "delete", key: id });
+
+    // TODO: send to websocket to update the dataidentifier and the other clients
   }
 
   return (
@@ -158,22 +228,22 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
           <WorkshopEditInput id="title" title="Nom du Workshop" placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange, hoverEnter, hoverLeave]} />
 
           {workshop.components.map((component: any) => {
-            let base = "components-" + component.id;
+            let identifier = "components-" + component.id;
             return (
               <div key={"component" + component.id} className="flex flex-col gap-4">
-                {chooseComponent(component, base + "-data", [handleWorkshopChange, hoverEnter, hoverLeave])}
+                {chooseComponent(component, identifier, [handleWorkshopChange, hoverEnter, hoverLeave, deleteComponent])}
 
                 {component.subcomponents.map((subcomponent: any) => {
-                  base += "-subcomponents-" + subcomponent.id;
+                  identifier += "-subcomponents-" + subcomponent.id;
                   return (
                     <div key={"subcomponents" + subcomponent.id} className="flex flex-col gap-4 ml-12">
-                      {chooseComponent(subcomponent, base + "-data", [handleWorkshopChange, hoverEnter, hoverLeave])}
+                      {chooseComponent(subcomponent, identifier, [handleWorkshopChange, hoverEnter, hoverLeave, deleteComponent])}
 
                       {subcomponent.subsubcomponents.map((subsubcomponent: any) => {
-                        base += "-subsubcomponents-" + subsubcomponent.id;
+                        identifier += "-subsubcomponents-" + subsubcomponent.id;
                         return (
                           <div key={"subsubcomponents" + subsubcomponent.id} className="flex flex-col gap-4 ml-12">
-                            {chooseComponent(subsubcomponent, base + "-data", [handleWorkshopChange, hoverEnter, hoverLeave])}
+                            {chooseComponent(subsubcomponent, identifier, [handleWorkshopChange, hoverEnter, hoverLeave, deleteComponent])}
                           </div>
                         );
                       })}
