@@ -20,7 +20,6 @@ RUN npm run build
 FROM node:16-alpine AS deploy
 WORKDIR /app
 
-ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
 COPY --from=build /app/next.config.js ./
@@ -33,4 +32,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
