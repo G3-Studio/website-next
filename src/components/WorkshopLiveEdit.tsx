@@ -27,7 +27,7 @@ function reducer(state: any, action: any) {
     case "delete":
       return deleteComponent(state, action.key);
     case "move":
-      return moveComponent(state, action.key, action.position, action.order, action.component);
+      return moveComponent(state, action.key, action.position, action.component);
     default:
       return state;
   }
@@ -246,7 +246,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     // on workshop update
     socket.on("workshop-move", (data: any) => {
       // update the workshop
-      dispatch({ type: "move", key: data.key, position: data.position, order: data.order, component: data.component});
+      dispatch({ type: "move", key: data.key, position: data.position, component: data.component});
     });
   };
 
@@ -414,7 +414,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       // dispatch({ type: "move", key: type, position: key, order: order, component: component });
 
       // send to websocket to update the dataidentifier and the other clients
-      socket.emit("workshop-move-send", { roomId: workshop.id, key: type, position: key, order: order, component: component });
+      socket.emit("workshop-move-send", { roomId: workshop.id, key: type, position: key, component: component });
     }
   }
 
