@@ -21,7 +21,7 @@ services:
       dockerfile: ./Dockerfile
       target: deploy
     ports:
-      - "58742:3000"
+      - "35101:3000"
     networks:
       - gcube-network
 
