@@ -62,7 +62,7 @@ model Workshop {
 }
 
 model Component {
-  id        Int     @default(autoincrement()) @id
+  id        String     @default(uuid()) @id
   order     Int
   type     String
   data     String
@@ -72,20 +72,20 @@ model Component {
 }
 
 model Subcomponent {
-  id        Int     @default(autoincrement()) @id
+  id        String     @default(uuid()) @id
   order     Int
   type     String
   data     String
   component  Component   @relation(fields: [componentId], references: [id])
-  componentId Int
+  componentId String
   subsubcomponents Subsubcomponent[]
 }
 
 model Subsubcomponent {
-  id        Int     @default(autoincrement()) @id
+  id        String     @default(uuid()) @id
   order     Int
   type     String
   data     String
   subcomponent  Subcomponent   @relation(fields: [subcomponentId], references: [id])
-  subcomponentId Int
+  subcomponentId String
 }

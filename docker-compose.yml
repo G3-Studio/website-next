@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  # gcube.db:
+  #   image: postgres:14.3-bullseye
+  #   container_name: gcube-db-prod
+  #   restart: unless-stopped
+  #   ports:
+  #     - '5432:5432'
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=next-gcube
+  #   networks:
+  #     - gcube-network
+  app:
+    image: gcube-docker
+    container_name: gcube-app-prod
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      target: deploy
+    ports:
+      - "3000:3000"
+    networks:
+      - gcube-network
+
+networks:
+  gcube-network:
+    driver: bridge
