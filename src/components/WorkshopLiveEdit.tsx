@@ -180,6 +180,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
   const [selected, setSelected] = useState("");
   // connected flag
   const [connected, setConnected] = useState<boolean>(false);
+  const [isInit, setIsInit] = useState<boolean>(false);
 
   useEffect(() => (() => { socketInitializer() })() , []);
 
@@ -208,6 +209,8 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     socket.on("connect", () => {
       // set connected flag
       setConnected(true);
+
+      if(!isInit) setIsInit(true);
 
       // join the workshop
       socket.emit("join-workshop", workshop.id);
@@ -422,7 +425,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     <>
       {!connected ? <div className="fixed top-0 left-0 z-50 flex flex-col items-center justify-center w-full h-screen bg-gray-900 bg-opacity-75">
         <LoadingLogo stroke="#FB8042" fill="none" />
-        <p className="font-sans text-lg text-white bold">Disconnected from server</p>
+        <p className="font-sans text-lg text-white bold">{isInit ? "Disconnected from server" : "Connecting to server"}</p>
       </div> : <></>}
     
       <div className="relative w-12">
