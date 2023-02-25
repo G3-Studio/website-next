@@ -273,7 +273,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     }
 
     // dispatch the modify action
-    dispatch({ type: "modify", key: id, value: value });
+    // dispatch({ type: "modify", key: id, value: value });
 
     // send to websocket to update the dataidentifier and the other clients
     socket.emit("workshop-modify-send", { roomId: workshop.id, key: id, value: value });
@@ -414,7 +414,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       component.order = order;
 
       // dispatch the add action
-      // dispatch({ type: "move", key: type, position: key, order: order, component: component });
+      // dispatch({ type: "move", key: type, position: key, component: component });
 
       // send to websocket to update the dataidentifier and the other clients
       socket.emit("workshop-move-send", { roomId: workshop.id, key: type, position: key, component: component });

@@ -28,28 +28,28 @@ export default async function SocketHandler(req: NextApiRequest, res: NextApiRes
 
         socket.on('workshop-delete-send', (data) => {
           // send to all clients in room except sender
-          socket.to(data.roomId.toString()).emit('workshop-delete', data);
+          io.to(data.roomId.toString()).emit('workshop-delete', data);
           
           // TODO: save to database
         });
 
         socket.on('workshop-modify-send', (data) => {
           // send to all clients in room except sender
-          socket.to(data.roomId.toString()).emit('workshop-modify', data);
+          io.to(data.roomId.toString()).emit('workshop-modify', data);
 
           // TODO: save to database
         });
 
         socket.on('workshop-add-send', (data) => {
-          // send to all clients in room except sender
-          socket.to(data.roomId.toString()).emit('workshop-add', data);
+          // send to all clients in room including sender
+          io.to(data.roomId.toString()).emit('workshop-add', data);
 
           // TODO: save to database
         });
 
         socket.on('workshop-move-send', (data) => {
           // send to all clients in room except sender
-          socket.to(data.roomId.toString()).emit('workshop-move', data);
+          io.to(data.roomId.toString()).emit('workshop-move', data);
 
           // TODO: save to database
         });
