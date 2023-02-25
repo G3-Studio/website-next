@@ -29,7 +29,7 @@ export default async function SocketHandler(req: NextApiRequest, res: NextApiRes
         socket.on('workshop-delete-send', (data) => {
           // send to all clients in room except sender
           socket.to(data.roomId.toString()).emit('workshop-delete', data);
-
+          
           // TODO: save to database
         });
 

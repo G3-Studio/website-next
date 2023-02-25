@@ -151,7 +151,7 @@ function deleteComponent(state: any, key: any) {
   return newState;
 }
 
-function moveComponent(state: any, key: any, position: any, order: any, component: any) {
+function moveComponent(state: any, key: any, position: any, component: any) {
   // do not mutate the state in order for react to detect the change
   let newState = JSON.parse(JSON.stringify(state));
 
@@ -238,6 +238,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
 
     // on workshop update
     socket.on("workshop-add", (data: any) => {
+      console.log("add")
       // update the workshop
       dispatch({ type: "add", key: data.key, value: data.value });
     });
@@ -405,6 +406,10 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       // send to websocket to update the dataidentifier and the other clients
       socket.emit("workshop-add-send", { roomId: workshop.id, key: key, value: newComponent });
     } else {
+      // console.log("move", type, key, order, component);
+
+      component.order = order;
+
       // dispatch the add action
       // dispatch({ type: "move", key: type, position: key, order: order, component: component });
 
