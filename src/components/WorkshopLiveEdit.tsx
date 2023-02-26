@@ -465,7 +465,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       </div> : <></>}
     
       <div className="relative w-12">
-        <div className="fixed left-0 flex flex-col items-center justify-center w-12 h-screen gap-4 p-1 bg-gray-600">
+        <div className="fixed left-0 flex flex-col items-center w-12 h-screen gap-4 px-1 py-2 bg-gray-600">
           <div onDragStart={toolsDragStart} data-type="text" className="flex items-center justify-center font-bold text-white bg-gray-900 rounded-lg cursor-pointer w-9 h-9" draggable>Te</div>
           <div onDragStart={toolsDragStart} data-type="title" className="flex items-center justify-center font-bold text-white bg-gray-900 rounded-lg cursor-pointer w-9 h-9" draggable>Ti</div>
         </div>

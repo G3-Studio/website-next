@@ -7,6 +7,8 @@ export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string
     function dragEnter(e: any) {
         e.preventDefault();
 
+        setAllowed(getAllowedDropZones(id, workshop));
+
         let type = e.dataTransfer.types[0];
         let mode = e.dataTransfer.types[1];
 
@@ -29,13 +31,24 @@ export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string
                 })
             }
 
-            console.log(nb);
-
             if (nb > 0){
                 newAllowed[2] = 0;
                 if (nb == 2) {
                     newAllowed[1] = 0;
                 }
+            }
+
+            let idArray = type.split("-");
+
+            // if a component is dragged inside itself
+            if (idArray.length == 2 && idArray[1] == id.split("-")[2]) {
+                newAllowed[1] = 0;
+                newAllowed[2] = 0;
+            }
+            
+            // if a subcomponent is dragged inside itself
+            if(idArray.length == 4 && idArray[1] == id.split("-")[2] && idArray[3] == id.split("-")[4]) {
+                newAllowed[2] = 0;
             }
 
             setAllowed(newAllowed);
