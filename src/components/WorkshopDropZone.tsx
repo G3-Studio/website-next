@@ -1,10 +1,46 @@
 import { isUndefined } from "lodash";
+import { useState } from "react";
 
 export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string, h?: string, workshop: any, drop: any }) {
-    let allowed = getAllowedDropZones(id, workshop);
+    const [allowed, setAllowed] = useState(getAllowedDropZones(id, workshop))
     
     function dragEnter(e: any) {
         e.preventDefault();
+
+        let type = e.dataTransfer.types[0];
+        let mode = e.dataTransfer.types[1];
+
+        if(mode == "move") {
+            let newAllowed = allowed;
+
+            let component = getComponent(type);
+
+            let nb = 0;
+            if(component.subsubcomponents && component.subsubcomponents.length > 0) {
+                nb = 1;
+            }
+
+            if(component.subcomponents && component.subcomponents.length > 0) {
+                nb = 1;
+                component.subcomponents.forEach((subcomponent: any) => {
+                    if(subcomponent.subsubcomponents && subcomponent.subsubcomponents.length > 0) {
+                        nb = 2; 
+                    }
+                })
+            }
+
+            console.log(nb);
+
+            if (nb > 0){
+                newAllowed[2] = 0;
+                if (nb == 2) {
+                    newAllowed[1] = 0;
+                }
+            }
+
+            setAllowed(newAllowed);
+        }
+
         // remove class to dropzone child
         if(e.target.children[0] && (allowed[0] == 1 || allowed[1] == 1 || allowed[2] == 1)) {
             e.target.classList.add("h-8");
@@ -74,6 +110,24 @@ export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string
 
             setLine(line, dropZoneZone);
         }
+    }
+
+    function getComponent(key: any){
+        // key from components-1-subcomponents-2 to array
+      let keyArray = key.split("-");
+  
+      // get the component to move
+      let component = JSON.parse(JSON.stringify(workshop));
+      for (let i = 0; i < keyArray.length; i++) {
+        // if keyArray[i] can be parsed as int then search in the array the object id
+        if (!isNaN(parseInt(keyArray[i]))) {
+          component = component.find((obj: any) => obj.order === parseInt(keyArray[i]));
+        } else {
+          component = component[keyArray[i]];
+        }
+      }
+  
+      return component;
     }
 
     function setLine(line: any, dropZoneZone: number) {

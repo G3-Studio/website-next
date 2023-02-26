@@ -10,7 +10,6 @@ import WorkshopEditInput from "./WorkshopEditInput";
 import WorkshopRenderer from "./WorkshopRenderer";
 
 // TODO: add export to pdf
-// TODO: add a way to reorder a component
 
 let socket: any;
 
@@ -67,7 +66,10 @@ function modifyWorkshop(state: any, key: string, value: any) {
   let data = newState;
   for (let i = 0; i < keyArray.length; i++) {
     if (i === keyArray.length - 1) {
-      data[keyArray[i]] = value;
+      data[keyArray[i]] = JSON.stringify({
+        ...JSON.parse(data[keyArray[i]]),
+        ...value
+      });
     } else {
       // if keyArray[i] can be parsed as int then search in the array the object id
       if (!isNaN(parseInt(keyArray[i]))) {
@@ -181,6 +183,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
   // connected flag
   const [connected, setConnected] = useState<boolean>(false);
   const [isInit, setIsInit] = useState<boolean>(false);
+  const [noConnectionText, setNoConnectionText] = useState<string>("Connecting to server");
 
   useEffect(() => (() => { socketInitializer() })() , []);
 
@@ -192,13 +195,43 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     });
 
     if (selected && selected !== "") {
-      let element = document.querySelector("#renderer-" + selected);
+      let element = document.querySelector("#" + selected);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
         element.classList.add("edit-selected");
       }
     }
+
+    setTimeout(() => {
+      setSelected("");
+    }, 2000);
   }, [selected]);
+
+
+  useEffect(() => {
+    setNoConnectionText("Disconnected from server");
+    // if(isInit) {
+    //   setConnected(false);
+    //   setTimeout(() => {
+    //     setTimeout(() => {
+    //       setNoConnectionText("Ca charge toujours");
+    //       setTimeout(() => {
+    //         setNoConnectionText("T'as vu il est beau le chargement hein ?");
+    //         setTimeout(() => {
+    //           setNoConnectionText("Dis-le qu'il est beau ou sinon je te libère pas !");
+    //           setTimeout(() => {
+    //             setNoConnectionText("Merci beaucoup pour ton compliment il me fait chaud au coeur !");
+    //             setTimeout(() => {
+    //               setConnected(true);
+    //               setNoConnectionText("Disconnected from server");
+    //             }, 3000);
+    //           }, 3000);
+    //         }, 3000);
+    //       }, 3000);
+    //     }, 3000);
+    //   }, 3000);
+    // }
+  }, [isInit])
 
   async function socketInitializer() {
     // create socket
@@ -241,7 +274,6 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
 
     // on workshop update
     socket.on("workshop-add", (data: any) => {
-      console.log("add")
       // update the workshop
       dispatch({ type: "add", key: data.key, value: data.value });
     });
@@ -257,37 +289,33 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     // get the input element
     let input = e.target as HTMLInputElement;
 
-    // get the id and value
-    let id = input.id;
-
-    // get the value
-    let value = input.value;
-
-    // TODO: hold multiple inputs in the same component
+    // get the id of the input element
+    let idList = input.id.split("-");
+    let id = idList.slice(0, idList.length - 1).join("-") + "-data";
 
     // test if data-field is set
     if (input.dataset.field) {
       // get the data-field value
       let dataField = input.dataset.field;
-      value = JSON.stringify({ [dataField]: value });
+      let value = { [dataField]: input.value };
+      
+      // dispatch the modify action
+      // dispatch({ type: "modify", key: id, value: value });
+
+      // send to websocket to update the dataidentifier and the other clients
+      socket.emit("workshop-modify-send", { roomId: workshop.id, key: id, value: value });
     }
-
-    // dispatch the modify action
-    // dispatch({ type: "modify", key: id, value: value });
-
-    // send to websocket to update the dataidentifier and the other clients
-    socket.emit("workshop-modify-send", { roomId: workshop.id, key: id, value: value });
   }
 
-  function hoverEnter(e: Event) {
-    let element = e.target as HTMLElement;
-    // remove the -data suffix
-    let id = element.id.substring(0, element.id.length - 5);
+  function handleClickRendererSelection(e: Event) {
+    // get the input element
+    let input = e.target as HTMLInputElement;
+
+    // get the id of the input element
+    let idList = input.id.split("-");
+    let id = idList.slice(1, idList.length).join("-");
+
     setSelected(id);
-  }
-
-  function hoverLeave(e: Event) {
-    setSelected("");
   }
 
   function deleteComponent(e: Event) {
@@ -311,11 +339,14 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     
     e.dataTransfer.setData("type", element.id);
     e.dataTransfer.setData("mode", "move");
+    // add data clearly to the dataTransfer object to use during DragEnter
+    e.dataTransfer.setData("move", "");
+    e.dataTransfer.setData(element.id, "");
     e.dataTransfer.effectAllowed = "move";
   }
 
   function getComponent(key: any){
-      // key from components.1.subcomponents.2.data to array
+      // key from components-1-subcomponents-2 to array
     let keyArray = key.split("-");
 
     // get the component to move
@@ -368,6 +399,11 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
           // rename subsubcomponents array to subcomponents
           component.subcomponents = component.subsubcomponents;
           delete component.subsubcomponents;
+
+          // add subsubcomponents array to each subcomponent
+          component.subcomponents.forEach((subcomponent: any) => {
+            subcomponent.subsubcomponents = [];
+          })
         }
       }
     }else if (dropZone == 1) {
@@ -425,7 +461,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     <>
       {!connected ? <div className="fixed top-0 left-0 z-50 flex flex-col items-center justify-center w-full h-screen bg-gray-900 bg-opacity-75">
         <LoadingLogo stroke="#FB8042" fill="none" />
-        <p className="font-sans text-lg text-white bold">{isInit ? "Disconnected from server" : "Connecting to server"}</p>
+        <p className="font-sans text-lg text-white bold">{noConnectionText}</p>
       </div> : <></>}
     
       <div className="relative w-12">
@@ -436,20 +472,20 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       </div>
       <div className="flex w-full h-screen">
         <div className="flex flex-col w-1/2 p-5">
-          <WorkshopEditInput id="title" title="Nom du Workshop" placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange, hoverEnter, hoverLeave]} />
+          <WorkshopEditInput id="title" title="Nom du Workshop" placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange]} />
           <WorkshopDropZone id={'drop'} h={"h-6"} workshop={editWorkshop} drop={drop} />
           {editWorkshop.components.map((component: any) => {
             let identifier = "components-" + component.order;
             return (
               <div key={"component" + component.order} className="flex flex-col">
-                {chooseComponent(component, identifier, [handleWorkshopChange, hoverEnter, hoverLeave, deleteComponent, elementDragStart])}
+                {chooseComponent(component, identifier, [handleWorkshopChange, deleteComponent, elementDragStart])}
                 <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop} />
                 {component.subcomponents.map((subcomponent: any) => {
                   identifier = "components-" + component.order + "-subcomponents-" + subcomponent.order;
                   return (
                     <div key={"subcomponents" + subcomponent.order} className="flex flex-col">
                       <div className="flex ml-12">
-                        {chooseComponent(subcomponent, identifier, [handleWorkshopChange, hoverEnter, hoverLeave, deleteComponent, elementDragStart])}
+                        {chooseComponent(subcomponent, identifier, [handleWorkshopChange, deleteComponent, elementDragStart])}
                       </div>
                       <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop} />
                       {subcomponent.subsubcomponents.map((subsubcomponent: any) => {
@@ -457,7 +493,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
                         return (
                           <div key={"subsubcomponents" + subsubcomponent.order} className="flex flex-col">
                             <div className="flex ml-24">
-                              {chooseComponent(subsubcomponent, identifier, [handleWorkshopChange, hoverEnter, hoverLeave, deleteComponent, elementDragStart])}
+                              {chooseComponent(subsubcomponent, identifier, [handleWorkshopChange, deleteComponent, elementDragStart])}
                             </div>
                             <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop}/>
                           </div>
@@ -471,7 +507,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
           })}
         </div>
         <div className="flex flex-col w-1/2 h-full p-5 bg-white">
-          <WorkshopRenderer workshop={editWorkshop} />
+          <WorkshopRenderer workshop={editWorkshop} onclick={handleClickRendererSelection} />
         </div>
       </div>
     </>

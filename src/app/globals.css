@@ -162,5 +162,5 @@ main {
 ------------------------------------------------------------------ */
 
 .edit-selected {
-  @apply bg-green-400 bg-opacity-50 rounded-lg;
+  @apply bg-green-400 bg-opacity-50 border-green-400 rounded-lg;
 }
