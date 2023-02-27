@@ -204,9 +204,6 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
   const [isInit, setIsInit] = useState<boolean>(false);
   const [noConnectionText, setNoConnectionText] = useState<string>("Connecting to server");
 
-  // add language to prism language list
-  console.log(Prism.languages);
-
   useEffect(() => (() => { socketInitializer() })() , []);
 
   useEffect(() => {
@@ -311,26 +308,11 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     });
   };
 
-  function handleWorkshopChange(e: Event) {
-    // get the input element
-    let input = e.target as HTMLInputElement;
+  function handleWorkshopChange(id: string, value: any) {
+    let idList = id.split("-");
+    let parsedId = idList.slice(0, idList.length - 1).join("-") + "-data";
 
-    // get the id of the input element
-    let idList = input.id.split("-");
-    let id = idList.slice(0, idList.length - 1).join("-") + "-data";
-
-    // test if data-field is set
-    if (input.dataset.field) {
-      // get the data-field value
-      let dataField = input.dataset.field;
-      let value = { [dataField]: input.value };
-      
-      // dispatch the modify action
-      // dispatch({ type: "modify", key: id, value: value });
-
-      // send to websocket to update the dataidentifier and the other clients
-      socket.emit("workshop-modify-send", { roomId: workshop.id, key: id, value: value });
-    }
+    socket.emit("workshop-modify-send", { roomId: workshop.id, key: parsedId, value: value });
   }
 
   function handleClickRendererSelection(e: Event) {
@@ -489,7 +471,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       </div>
       <div className="flex w-full">
         <div className="flex flex-col w-1/2 p-5">
-          <WorkshopEditInput id="title" title="Nom du Workshop" placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange]} />
+          <WorkshopEditInput id="title" title="Nom du Workshop" dataField="wsmaintitle" placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange]} />
           <WorkshopDropZone id={'drop'} h={"h-6"} workshop={editWorkshop} drop={drop} />
           {editWorkshop.components.map((component: any) => {
             let identifier = "components-" + component.order;

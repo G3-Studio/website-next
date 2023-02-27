@@ -1,5 +1,4 @@
 import { getComponent } from "@/lib/component";
-import { isUndefined } from "lodash";
 import { useState } from "react";
 
 export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string, h?: string, workshop: any, drop: any }) {
@@ -220,7 +219,7 @@ export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string
         }
 
         // if next component is a component and the component doesnot exist then rename to bottom
-        if(nextComponent == "component" && isUndefined(workshop.components.find((component: any) => component.order == idArray[2] + 1))) {
+        if(nextComponent == "component" && workshop.components.find((component: any) => component.order == idArray[2] + 1) == undefined) {
             nextComponent = "bottom";
         }
 

@@ -14,8 +14,8 @@ export default function WorkshopCode({ id, data, onclick }: { id: string, data: 
 
 export function WorkshopCodeEdit({ id, data, events }: { id: string, data: any, events: any }) {
     return (
-        <WorkshopEditComponentContainer id={id} ondelete={events && events[1]} ondrag={events && events[2]}>
-            <WorkshopTextAreaInput id={id + "-code"} title="Code" placeholder="void test()" data={data.code} dataField="code" events={events}  />
+        <WorkshopEditComponentContainer id={id} name="Code" ondelete={events && events[1]} ondrag={events && events[2]}>
+            <WorkshopTextAreaInput id={id + "-code"} title="Texte" placeholder="void test()" data={data.code} dataField="code" events={events}  />
         </WorkshopEditComponentContainer>
     )
 }

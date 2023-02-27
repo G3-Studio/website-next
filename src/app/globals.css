@@ -42,6 +42,10 @@ main {
   @apply font-sans font-semibold w-fit;
 }
 
+.ws-commonerror {
+  @apply rounded-lg bg-[#fff2cc];
+}
+
 
 /* ----------------------------------------------------------------
                     CUSTOM CHECKBOXES

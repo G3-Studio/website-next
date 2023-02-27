@@ -1,7 +1,7 @@
 "use client";
 import Image from 'next/image';
 import Link from 'next/link';
-import { TextParser } from '@/lib/textParser';
+import { TextParser } from '@/lib/text-parser';
 
 export default function Header({ title, session, disableBar }: { title?: any, session?: any, disableBar: any }) {
     return (

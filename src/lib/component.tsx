@@ -1,8 +1,13 @@
 import WorkshopCode, { WorkshopCodeDefaultData, WorkshopCodeEdit } from "@/components/workshop/elements/WorkshopCode";
+import WorkshopCommonMistake, { WorkshopCommonMistakeDefaultData, WorkshopCommonMistakeEdit } from "@/components/workshop/elements/WorkshopCommonMistake";
+import WorkshopImage, { WorkshopImageDefaultData, WorkshopImageEdit } from "@/components/workshop/elements/WorkshopImage";
+import WorkshopList, { WorkshopListDefaultData, WorkshopListEdit } from "@/components/workshop/elements/WorkshopList";
 import WorkshopReminder, { WorkshopReminderDefaultData, WorkshopReminderEdit } from "@/components/workshop/elements/WorkshopReminder";
 import WorkshopSubtitle, { WorkshopSubtitleDefaultData, WorkshopSubtitleEdit } from "@/components/workshop/elements/WorkshopSubtitle";
 import WorkshopText, { WorkshopTextDefaultData, WorkshopTextEdit } from "@/components/workshop/elements/WorkshopText";
+import WorkshopTheSmallPlus, { WorkshopTheSmallPlusDefaultData, WorkshopTheSmallPlusEdit } from "@/components/workshop/elements/WorkshopTheSmallPlus";
 import WorkshopTitle, { WorkshopTitleDefaultData, WorkshopTitleEdit } from "@/components/workshop/elements/WorkshopTitle";
+import WorkshopToGoFurther, { WorkshopToGoFurtherDefaultData, WorkshopToGoFurtherEdit } from "@/components/workshop/elements/WorkshopToGoFurther";
 import WorkshopYourTurn, { WorkshopYourTurnDefaultData, WorkshopYourTurnEdit } from "@/components/workshop/elements/WorkshopYourTurn";
 import React from "react";
 
@@ -49,7 +54,42 @@ export function listComponent(){
           component: WorkshopCode,
           defaultData: WorkshopCodeDefaultData,
           edit: WorkshopCodeEdit
-      }
+      },
+      {
+        name: "image",
+        short: "Ig",
+        component: WorkshopImage,
+        defaultData: WorkshopImageDefaultData,
+        edit: WorkshopImageEdit
+    },
+    {
+      name: "commonmistake",
+      short: "Cm",
+      component: WorkshopCommonMistake,
+      defaultData: WorkshopCommonMistakeDefaultData,
+      edit: WorkshopCommonMistakeEdit
+    },
+    {
+      name: "thesmallplus",
+      short: "Sp",
+      component: WorkshopTheSmallPlus,
+      defaultData: WorkshopTheSmallPlusDefaultData,
+      edit: WorkshopTheSmallPlusEdit
+    },
+    {
+      name: "togofurther",
+      short: "Gf",
+      component: WorkshopToGoFurther,
+      defaultData: WorkshopToGoFurtherDefaultData,
+      edit: WorkshopToGoFurtherEdit
+    },
+    {
+      name: "list",
+      short: "Li",
+      component: WorkshopList,
+      defaultData: WorkshopListDefaultData,
+      edit: WorkshopListEdit
+    },
   ]
 }
 

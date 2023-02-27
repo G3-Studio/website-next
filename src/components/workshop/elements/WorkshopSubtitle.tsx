@@ -1,5 +1,5 @@
 "use client";
-import { TextParser } from '@/lib/textParser'
+import { TextParser } from '@/lib/text-parser'
 import WorkshopEditComponentContainer from '../WorkshopEditComponentContainer';
 import WorkshopTextInput from '../inputs/WorkshopTextInput';
 
@@ -11,8 +11,8 @@ export default function WorkshopSubtitle({ id, data, onclick }: { id: string, da
 
 export function WorkshopSubtitleEdit({ id, data, events }: {id: string, data: any, events: any}) {
     return (
-        <WorkshopEditComponentContainer id={id} ondelete={events && events[1]} ondrag={events && events[2]}>
-            <WorkshopTextInput id={id + "-text"} title="Sous-titre" placeholder="Sous-Section" data={data.text} dataField="text" events={events}  />
+        <WorkshopEditComponentContainer id={id} name="Sous-titre" ondelete={events && events[1]} ondrag={events && events[2]}>
+            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Sous-Section" data={data.text} dataField="text" events={events}  />
         </WorkshopEditComponentContainer>
     )
 }
