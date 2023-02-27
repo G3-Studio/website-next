@@ -8,14 +8,12 @@ export default async function SocketHandler(req: NextApiRequest, res: NextApiRes
 //   if (session) {
     // Signed in
     if (res.socket && (res.socket as any).server.io) {
-      // console.log('test2');
     } else {
       const io = new Server((res.socket as any).server);
       (res.socket as any).server.io = io;
       
       io.on('connection', socket => {
         // Listening for a connection
-        console.log('Connected');
 
         socket.on('join-workshop', (id) => {
           // leave all rooms
@@ -56,8 +54,7 @@ export default async function SocketHandler(req: NextApiRequest, res: NextApiRes
       });
 
       io.on('disconnect', socket => {
-        // Listening for a disconnect
-        console.log('Disconnected');
+        // Listening for a disconnection
       }
       );
     }

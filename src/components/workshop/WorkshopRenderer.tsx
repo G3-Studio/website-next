@@ -1,19 +1,8 @@
 "use client";
-import WorkshopTitle from "./workshop/WorkshopTitle";
-import WorkshopText from "./workshop/WorkshopText";
+import WorkshopTitle from "./elements/WorkshopTitle";
+import WorkshopText from "./elements/WorkshopText";
 import React from "react";
-
-function chooseComponent(component: any, id: string, onclick? : any) : JSX.Element {
-    switch (component.type) {
-        case "title":
-            return <WorkshopTitle key={id} id={id} data={JSON.parse(component.data)} onclick={onclick} />
-        case "text":
-            return <WorkshopText key={id} id={id} data={JSON.parse(component.data)} onclick={onclick} />
-        default:
-            return <React.Fragment key={id}></React.Fragment>
-    }
-}
-
+import { chooseComponent } from "@/lib/component";
 
 export default function WorkshopRenderer({ workshop, onclick }: { workshop: any, onclick?: any }) {
     return (

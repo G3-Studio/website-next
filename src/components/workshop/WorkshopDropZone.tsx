@@ -1,3 +1,4 @@
+import { getComponent } from "@/lib/component";
 import { isUndefined } from "lodash";
 import { useState } from "react";
 
@@ -15,7 +16,7 @@ export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string
         if(mode == "move") {
             let newAllowed = allowed;
 
-            let component = getComponent(type);
+            let component = getComponent(workshop, type);
 
             let nb = 0;
             if(component.subsubcomponents && component.subsubcomponents.length > 0) {
@@ -123,24 +124,6 @@ export default function WorkshopDropZone({ id, h, workshop, drop }: { id: string
 
             setLine(line, dropZoneZone);
         }
-    }
-
-    function getComponent(key: any){
-        // key from components-1-subcomponents-2 to array
-      let keyArray = key.split("-");
-  
-      // get the component to move
-      let component = JSON.parse(JSON.stringify(workshop));
-      for (let i = 0; i < keyArray.length; i++) {
-        // if keyArray[i] can be parsed as int then search in the array the object id
-        if (!isNaN(parseInt(keyArray[i]))) {
-          component = component.find((obj: any) => obj.order === parseInt(keyArray[i]));
-        } else {
-          component = component[keyArray[i]];
-        }
-      }
-  
-      return component;
     }
 
     function setLine(line: any, dropZoneZone: number) {

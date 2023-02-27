@@ -1,7 +1,7 @@
 "use client";
 import { TextParser } from "@/lib/textParser";
 import WorkshopEditComponentContainer from "../WorkshopEditComponentContainer";
-import WorkshopEditInput from "../WorkshopEditInput";
+import WorkshopTextInput from "../inputs/WorkshopTextInput";
 
 export default function WorkshopTitle({ id, data, onclick }: { id: string, data: any, onclick?: any }) {
     return (
@@ -9,10 +9,16 @@ export default function WorkshopTitle({ id, data, onclick }: { id: string, data:
     );
 }
 
-export function WorkshopTitleEdit(params: {id: string, data: any, events: any}) {
+export function WorkshopTitleEdit({ id, data, events }: {id: string, data: any, events: any}) {
     return (
-        <WorkshopEditComponentContainer id={params.id} ondelete={params.events && params.events[1]} ondrag={params.events && params.events[2]}>
-            <WorkshopEditInput id={params.id + "-text"} title="Titre" placeholder="Section 1"  data={params.data.text} dataField="text" events={params.events} />
+        <WorkshopEditComponentContainer id={id} ondelete={events && events[1]} ondrag={events && events[2]}>
+            <WorkshopTextInput id={id + "-text"} title="Titre" placeholder="Section 1"  data={data.text} dataField="text" events={events} />
         </WorkshopEditComponentContainer>
     )
+}
+
+export function WorkshopTitleDefaultData() {
+    return {
+        text: "Titre"
+    }
 }

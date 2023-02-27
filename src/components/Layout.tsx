@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
-import WorkshopLoadBar from "@/components/WorkshopLoadBar";
+import WorkshopLoadBar from "@/components/workshop/WorkshopLoadBar";
 
-export default function WorkshopLayout({ children, title, session, disableBar }: { children: React.ReactNode, title: string, session?: any, disableBar?: boolean }) {
+export default function WorkshopLayout({ children, title, session, disableBar, overflowHidden }: { children: React.ReactNode, title: string, session?: any, disableBar?: boolean, overflowHidden?: boolean }) {
   return (
     <WorkshopLoadBar>
       <main className="main">

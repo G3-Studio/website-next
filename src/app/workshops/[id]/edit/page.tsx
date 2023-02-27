@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
-import WorkshopRenderer from "@/components/WorkshopRenderer";
-import WorkshopClient from "@/components/WorkshopClient";
-import WorkshopLiveEdit from "@/components/WorkshopLiveEdit";
+import WorkshopClient from "@/components/workshop/WorkshopClient";
+import WorkshopLiveEdit from "@/components/workshop/WorkshopLiveEdit";
 
 export default async function EditWorkshop({ params }: { params: { id: number } }) {
   if(isNaN(params.id)) return <div>Erreur 500</div>;
@@ -33,7 +32,7 @@ export default async function EditWorkshop({ params }: { params: { id: number } 
   });
 
   return (
-    <WorkshopClient workshop={workshop} disableBar={true} >
+    <WorkshopClient workshop={workshop} disableBar={true} overflowHidden={true} >
       <div className="flex justify-center w-full min-h-screen bg-gray-100 content">
         <WorkshopLiveEdit workshop={workshop} />
       </div>

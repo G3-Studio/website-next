@@ -1,5 +1,6 @@
 "use client";
 import './globals.css'
+import "prismjs/themes/prism-tomorrow.css";
 import { Oxygen, Montserrat, Roboto_Mono } from '@next/font/google';
 import { SessionProvider } from 'next-auth/react';
 

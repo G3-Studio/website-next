@@ -13,12 +13,23 @@ export class TextParser {
 
     public parse(): string {
         this.parsedText = this.text;
+        this.escapeHtml();
         this.parseBold();
         this.parseItalic();
         this.parseGreen();
         this.parseRed();
         this.parseSpan();
+        this.parseCode();
         return this.parsedText;
+    }
+
+    private escapeHtml(): void {
+        this.parsedText = this.parsedText
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     private parseBold(): void {
@@ -39,6 +50,10 @@ export class TextParser {
 
     private parseSpan(): void {
         this.parsedText = this.parsedText.replace(/\[span\](.*?)\[\/span\]/g, '<span>$1</span>');
+    }
+
+    private parseCode(): void {
+        this.parsedText = this.parsedText.replace(/\[code\](.*?)\[\/code\]/g, '&nbsp;<code class="language-cs">$1</code>&nbsp;');
     }
 }
 

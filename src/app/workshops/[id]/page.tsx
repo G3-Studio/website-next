@@ -1,7 +1,7 @@
-import WorkshopRenderer from '@/components/WorkshopRenderer';
+import WorkshopRenderer from '@/components/workshop/WorkshopRenderer';
 import prisma from '@/lib/prisma';
-import WorkshopClient from '@/components/WorkshopClient';
-import WorkshopEditBtn from '@/components/WorkshopEditBtn';
+import WorkshopClient from '@/components/workshop/WorkshopClient';
+import WorkshopEditBtn from '@/components/workshop/WorkshopEditBtn';
 
 export default async function Workshop({ params }: { params: { id: number } }) {
   if(isNaN(params.id)) return <div>Erreur 500</div>;

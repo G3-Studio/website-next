@@ -22,12 +22,24 @@ main {
   @apply bg-[#fff2cc] font-sans text-lg font-semibold italic px-1 w-fit;
 }
 
+.ws-subtitle {
+  @apply px-1 font-sans text-lg italic font-semibold text-orange-500 w-fit;
+}
+
 .ws-text h.green {
   @apply bg-[#b2feb7] text-black px-1 w-fit;
 }
 
 .ws-text h.red {
   @apply bg-[#f4cccc] text-black px-1 italic font-bold;
+}
+
+.ws-yourturn {
+  @apply font-sans font-semibold w-fit;
+}
+
+.ws-reminder {
+  @apply font-sans font-semibold w-fit;
 }
 
 
