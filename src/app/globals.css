@@ -46,6 +46,13 @@ main {
   @apply rounded-lg bg-[#fff2cc];
 }
 
+.ws-thesmallplus {
+  @apply rounded-lg bg-[#ccfdcf];
+}
+
+.ws-togofurther {
+  @apply rounded-lg bg-[#ccf6fd];
+}
 
 /* ----------------------------------------------------------------
                     CUSTOM CHECKBOXES

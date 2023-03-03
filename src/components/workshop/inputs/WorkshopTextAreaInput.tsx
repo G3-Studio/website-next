@@ -1,6 +1,6 @@
 
 
-export default function WorkshopTextAreaInput({ id, title, placeholder, data, dataField, events }: { id: string, title: string, placeholder: string, data: string, dataField: string, events?: any }) {
+export default function WorkshopTextAreaInput({ id, title, placeholder, value, data, dataField, events }: { id: string, title: string, placeholder: string, value: any, data: string, dataField: string, events?: any }) {
 
     function handleTab(e: React.KeyboardEvent<HTMLTextAreaElement>) {
         if (e.key === 'Tab') {
@@ -16,9 +16,12 @@ export default function WorkshopTextAreaInput({ id, title, placeholder, data, da
     function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         const target = e.target as HTMLTextAreaElement;
 
-        let value = { [dataField]: target.value }
+        let send = { 
+            ...value,
+            [dataField]: target.value
+        }
 
-        events && events[0](id, value);
+        events && events[0](id, send);
     }
 
     return (

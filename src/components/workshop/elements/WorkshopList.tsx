@@ -20,11 +20,37 @@ export default function WorkshopList({ id, data, onclick }: { id: string, data: 
 
 export function WorkshopListEdit({ id, data, events }: {id: string, data: any, events: any}) {
 
+    function onAdd(){
+        events && events[0]((id + "-item"), {
+            ...data,
+            items: [...data.items, "Item"]
+        });
+    }
+    
+    function onDeleteItem(e: any){
+        // get element dataset index
+        const index = e.currentTarget.dataset.index;
+
+        console.log(index);
+
+        // remove item from array
+        let value = {
+            ...data,
+            items: data.items.filter((item: any, i: number) => i != index)
+        }
+
+        // remove item from array
+        events && events[0]((id + "-item"), value);
+    }
+
     return (
-        <WorkshopEditComponentContainer id={id} name="List" ondelete={events && events[1]} ondrag={events && events[2]}>
+        <WorkshopEditComponentContainer id={id} name="List" onadd={onAdd} ondelete={events && events[1]} ondrag={events && events[2]}>
             {data.items.map((item: any, index: number) => {
                 return (
-                    <WorkshopTextInput key={id + "-item" + (index).toString()} id={id + "-item" + (index).toString()} list={index} title={"Element " + (index + 1).toString()} placeholder="Ceci est un element" data={item} dataField="item" events={events} />
+                    <div key={id + "-item" + (index).toString()} className="flex gap-2">
+                        <button className="px-3 my-2 text-white bg-red-500 rounded-md" data-index={index} onClick={onDeleteItem}>X</button>
+                        <WorkshopTextInput id={id + "-item" + (index).toString()} list={index} title={"Element " + (index + 1).toString()} value={data} placeholder="Ceci est un element" data={item} dataField="items" events={events} />
+                    </div>
                 )
             })}
         </WorkshopEditComponentContainer>

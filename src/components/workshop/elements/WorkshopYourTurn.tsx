@@ -12,7 +12,7 @@ export default function WorkshopYourTurn({ id, data, onclick }: { id: string, da
 export function WorkshopYourTurnEdit({ id, data, events }: {id: string, data: any, events: any}) {
     return (
         <WorkshopEditComponentContainer id={id} name="À Ton Tour" ondelete={events && events[1]} ondrag={events && events[2]}>
-            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Section 1"  data={data.text} dataField="text" events={events} />
+            <WorkshopTextInput id={id + "-text"} value={data} title="Texte" placeholder="Section 1"  data={data.text} dataField="text" events={events} />
         </WorkshopEditComponentContainer>
     )
 }

@@ -14,6 +14,7 @@ export class TextParser {
     public parse(): string {
         this.parsedText = this.text;
         this.escapeHtml();
+        this.ln2br();
         this.parseBold();
         this.parseItalic();
         this.parseGreen();
@@ -30,6 +31,10 @@ export class TextParser {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    private ln2br(): void {
+        this.parsedText = this.parsedText.replace(/\n/g, '<br>');
     }
 
     private parseBold(): void {

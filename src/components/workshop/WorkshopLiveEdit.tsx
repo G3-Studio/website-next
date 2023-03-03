@@ -471,7 +471,7 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       </div>
       <div className="flex w-full">
         <div className="flex flex-col w-1/2 p-5">
-          <WorkshopEditInput id="title" title="Nom du Workshop" dataField="wsmaintitle" placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange]} />
+          <WorkshopEditInput id="title" title="Nom du Workshop" dataField="wsmaintitle" value={{}} placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange]} />
           <WorkshopDropZone id={'drop'} h={"h-6"} workshop={editWorkshop} drop={drop} />
           {editWorkshop.components.map((component: any) => {
             let identifier = "components-" + component.order;

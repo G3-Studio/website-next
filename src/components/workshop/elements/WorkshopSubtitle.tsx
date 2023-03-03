@@ -12,7 +12,7 @@ export default function WorkshopSubtitle({ id, data, onclick }: { id: string, da
 export function WorkshopSubtitleEdit({ id, data, events }: {id: string, data: any, events: any}) {
     return (
         <WorkshopEditComponentContainer id={id} name="Sous-titre" ondelete={events && events[1]} ondrag={events && events[2]}>
-            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Sous-Section" data={data.text} dataField="text" events={events}  />
+            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Sous-Section" value={data} data={data.text} dataField="text" events={events}  />
         </WorkshopEditComponentContainer>
     )
 }

@@ -1,7 +1,7 @@
 "use client";
 import { TextParser } from '@/lib/text-parser'
 import WorkshopEditComponentContainer from '../WorkshopEditComponentContainer';
-import WorkshopTextInput from '../inputs/WorkshopTextInput';
+import WorkshopTextAreaInput from '../inputs/WorkshopTextAreaInput';
 
 export default function WorkshopText({ id, data, onclick }: { id: string, data: any, onclick?: any }) {
     return (
@@ -12,7 +12,7 @@ export default function WorkshopText({ id, data, onclick }: { id: string, data: 
 export function WorkshopTextEdit({ id, data, events }: {id: string, data: any, events: any}) {
     return (
         <WorkshopEditComponentContainer id={id} name="Texte" ondelete={events && events[1]} ondrag={events && events[2]}>
-            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Ceci est un test !" data={data.text} dataField="text" events={events}  />
+            <WorkshopTextAreaInput id={id + "-text"} title="Texte" placeholder="Ceci est un test !" value={data} data={data.text} dataField="text" events={events}  />
         </WorkshopEditComponentContainer>
     )
 }

@@ -15,7 +15,7 @@ export default function WorkshopTheSmallPlus({ id, data, onclick }: { id: string
 export function WorkshopTheSmallPlusEdit({ id, data, events }: {id: string, data: any, events: any}) {
     return (
         <WorkshopEditComponentContainer id={id} name="Le petit plus" ondelete={events && events[1]} ondrag={events && events[2]}>
-            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Section 1"  data={data.text} dataField="text" events={events} />
+            <WorkshopTextInput id={id + "-text"} title="Texte" placeholder="Section 1" value={data} data={data.text} dataField="text" events={events} />
         </WorkshopEditComponentContainer>
     )
 }

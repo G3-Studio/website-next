@@ -1,6 +1,6 @@
 import { TextParser } from "@/lib/text-parser";
 
-export default function WorkshopTextInput({ id, title, placeholder, data, dataField, events, list }: { id: string, title: string, placeholder: string, data: string, dataField: string, events?: any, list?: number }) {
+export default function WorkshopTextInput({ id, title, placeholder, value, data, dataField, events, list }: { id: string, title: string, placeholder: string, value: any, data: string, dataField: string, events?: any, list?: number }) {
     
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const target = e.target as HTMLInputElement;
@@ -14,17 +14,21 @@ export default function WorkshopTextInput({ id, title, placeholder, data, dataFi
 
                 // change the innerText
                 element.innerHTML = split[0] + ": " + new TextParser(target.value).parse();
+
+                // send changes to parent
+                
             }
         } else {
             // if list is defined
-            let value: any = { [dataField]: target.value }; 
+            let send: any = value;
 
-            if(list !== undefined && list) {
-                value = data;
-                value[dataField][list] = target.value;
+            if(list !== undefined && list !== null) {
+                send[dataField][list] = target.value;
+            }else {
+                send[dataField] = target.value;
             }
 
-            events && events[0](id, value);
+            events && events[0](id, send);
         }
     }
 
