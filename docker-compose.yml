@@ -24,6 +24,8 @@ services:
       - "35101:3000"
     networks:
       - gcube-network
+    stdin_open: true # docker run -i
+    tty: true  
 
 networks:
   gcube-network:
