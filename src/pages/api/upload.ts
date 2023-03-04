@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import formidable, { File } from 'formidable';
 import { v4 as uuidv4 } from "uuid";
+import mv from "mv";
 
 export const config = {
     api: {
@@ -61,18 +62,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         for (const file of files) {
             const tempPath = file[1].filepath;
             const targetFileName = uuidv4() + path.extname(file[1].originalFilename?.toString() || 'file.jpg');
-            try {
-                await fs.rename(tempPath, targetPath + targetFileName);
-            } catch (e) {
-                console.log(e);
-                status = 500;
-                resultBody = {
-                    status: 'fail', 
-                    message: 'Upload error', 
-                    url: new Array<String>(),
+
+            mv(tempPath, targetPath + targetFileName, function(err) {
+                if (err) {
+                    console.log(err);
+                    status = 500;
+                    resultBody = {
+                        status: 'fail', 
+                        message: 'Upload error', 
+                        url: new Array<String>(),
+                    }
                 }
-                break
-            }
+            });
+
             resultBody.url.push('/uploads/workshop/' + targetFileName);
         }
     }
