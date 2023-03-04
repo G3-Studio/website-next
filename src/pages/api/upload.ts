@@ -75,6 +75,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
             });
 
+            try {
+                await fs.chmod(targetPath + targetFileName, 0o755);
+            } catch (e) {
+                console.log(e);
+                status = 500;
+                resultBody = {
+                    status: 'fail', 
+                    message: 'Upload error', 
+                    url: new Array<String>(),
+                }
+            }
+           
             resultBody.url.push('/uploads/workshop/' + targetFileName);
         }
     }
