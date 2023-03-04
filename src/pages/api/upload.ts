@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const tempPath = file[1].filepath;
             const targetFileName = uuidv4() + path.extname(file[1].originalFilename?.toString() || 'file.jpg');
 
-            mv(tempPath, targetPath + targetFileName, function(err) {
+            mv(tempPath, targetPath + targetFileName, async function(err) {
                 if (err) {
                     console.log(err);
                     status = 500;
@@ -73,19 +73,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         url: new Array<String>(),
                     }
                 }
-            });
 
-            try {
-                await fs.chmod(targetPath + targetFileName, 0o755);
-            } catch (e) {
-                console.log(e);
-                status = 500;
-                resultBody = {
-                    status: 'fail', 
-                    message: 'Upload error', 
-                    url: new Array<String>(),
+                try {
+                    await fs.chmod(targetPath + targetFileName, 0o755);
+                } catch (e) {
+                    console.log(e);
+                    status = 500;
+                    resultBody = {
+                        status: 'fail', 
+                        message: 'Upload error', 
+                        url: new Array<String>(),
+                    }
                 }
-            }
+            });
            
             resultBody.url.push('/uploads/workshop/' + targetFileName);
         }
