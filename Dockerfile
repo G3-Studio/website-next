@@ -28,6 +28,11 @@ COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 
+RUN useradd -ms /bin/bash admin
+RUN chown -R admin:admin /app
+RUN chmod 755 /app
+USER admin
+
 EXPOSE 3000
 
 ENV PORT 3000
