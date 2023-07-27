@@ -17,7 +17,7 @@ npm install
 
 ### Database
 
-1. Create a database in PostgreSQL
+1. Create a database in MariaDB/MySQL
 2. Use prisma to generate the database schema
 ```sh
 npx prisma generate

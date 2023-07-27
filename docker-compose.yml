@@ -1,15 +1,14 @@
 version: '3.8'
 services:
   db:
-    image: postgres:14.3-bullseye
-    container_name: gcube-db-prod
-    restart: unless-stopped
-    ports:
-      - '5432:5432'
+    image: mariadb
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=next-gcube
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: gcube
+      MYSQL_USER: gcube
+      MYSQL_PASSWORD: password
+    volumes:
+      - data:/var/lib/mysql
     networks:
       - gcube-network
   app:

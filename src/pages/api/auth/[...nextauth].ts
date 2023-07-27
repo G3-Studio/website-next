@@ -1,23 +1,24 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma";
-import { compareSync } from "bcrypt";
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import prisma from '@/lib/prisma';
+import { compareSync } from 'bcrypt';
+import { User } from '@/types';
 
 export const authOptions = {
   //adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
-      id: "credentials",
+      id: 'credentials',
       // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: "Credentials",
+      name: 'Credentials',
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        email: { label: "Email", type: "text", placeholder: "john.smith@example.com" },
-        password: { label: "Mot de passe", type: "password", placeholder: "********" },
+        email: { label: 'Email', type: 'text', placeholder: 'john.smith@example.com' },
+        password: { label: 'Mot de passe', type: 'password', placeholder: '********' },
       },
       async authorize(credentials, req) {
         try {
@@ -39,7 +40,7 @@ export const authOptions = {
             return null;
           }
         } catch (err) {
-          console.log("Authorize error:", err);
+          console.log('Authorize error:', err);
         }
       },
     }),

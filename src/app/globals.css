@@ -118,7 +118,9 @@ main {
 .checkbox.path svg {
   stroke-dasharray: var(--a, 86.12);
   stroke-dashoffset: var(--o, 86.12);
-  transition: stroke-dasharray 0.6s, stroke-dashoffset 0.6s;
+  transition:
+    stroke-dasharray 0.6s,
+    stroke-dashoffset 0.6s;
 }
 .checkbox.bounce {
   --stroke: var(--tick);
@@ -136,25 +138,25 @@ main {
 
 @-webkit-keyframes bounce {
   50% {
-      transform: scale(1.2);
+    transform: scale(1.2);
   }
   75% {
-      transform: scale(0.9);
+    transform: scale(0.9);
   }
   100% {
-      transform: scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes bounce {
   50% {
-      transform: scale(1.2);
+    transform: scale(1.2);
   }
   75% {
-      transform: scale(0.9);
+    transform: scale(0.9);
   }
   100% {
-      transform: scale(1);
+    transform: scale(1);
   }
 }
 
@@ -178,7 +180,6 @@ main {
     transform: rotate(360deg);
   }
 }
-
 
 /* ----------------------------------------------------------------
                     CUSTOM SELECTED

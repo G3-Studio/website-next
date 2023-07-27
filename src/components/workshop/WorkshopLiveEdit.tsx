@@ -1,32 +1,33 @@
-"use client";
-import { useEffect, useReducer, useState } from "react";
-import { io } from "socket.io-client";
-import { v4 as uuidv4 } from "uuid";
-import LoadingLogo from "../LoadingLogo";
-import WorkshopDropZone from "./WorkshopDropZone";
-import WorkshopEditInput from "./inputs/WorkshopTextInput";
-import WorkshopRenderer from "./WorkshopRenderer";
-import { getComponent, chooseComponentEdit, chooseComponentDefaultData, listComponent } from "@/lib/component";
-import Prism from "prismjs";
-import "prismjs/components/prism-csharp";
+'use client';
+import { DragEvent, MouseEvent, useEffect, useReducer, useState } from 'react';
+import { Socket, io } from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
+import LoadingLogo from '../LoadingLogo';
+import WorkshopDropZone from './WorkshopDropZone';
+import WorkshopEditInput from './inputs/WorkshopTextInput';
+import WorkshopRenderer from './WorkshopRenderer';
+import { getComponent, chooseComponentEdit, chooseComponentDefaultData, listComponent } from '@/lib/component';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-csharp';
+import { Component, ComponentTypeFromList, Subcomponent, Subsubcomponent, Workshop } from '@/types';
 
 // TODO: add export to pdf
 
-let socket: any;
+let socket: Socket;
 
 function reducer(state: any, action: any) {
   switch (action.type) {
-    case "add":
+    case 'add':
       return addComponent(state, action.key, action.value);
-    case "modify":
+    case 'modify':
       return modifyWorkshop(state, action.key, action.value);
-    case "set":
+    case 'set':
       return action.workshop;
-    case "reorder":
+    case 'reorder':
       return reorder(state);
-    case "delete":
+    case 'delete':
       return deleteComponent(state, action.key);
-    case "move":
+    case 'move':
       return moveComponent(state, action.key, action.position, action.component);
     default:
       return state;
@@ -39,15 +40,15 @@ function reorder(state: any) {
   let components = state.components;
 
   // sort components
-  components.sort((a: any, b: any) => a.order - b.order);
+  components.sort((a: Component, b: Component) => a.order - b.order);
 
   // sort subcomponents and subsubcomponents
-  components.forEach((component: any) => {
+  components.forEach((component: Component) => {
     if (component.subcomponents) {
-      component.subcomponents.sort((a: any, b: any) => a.order - b.order);
-      component.subcomponents.forEach((subcomponent: any) => {
-        if (subcomponent.subcomponents) {
-          subcomponent.subcomponents.sort((a: any, b: any) => a.order - b.order);
+      component.subcomponents.sort((a: Subcomponent, b: Subcomponent) => a.order - b.order);
+      component.subcomponents.forEach((subcomponent: Subcomponent) => {
+        if (subcomponent.subsubcomponents) {
+          subcomponent.subsubcomponents.sort((a: Subsubcomponent, b: Subsubcomponent) => a.order - b.order);
         }
       });
     }
@@ -58,7 +59,7 @@ function reorder(state: any) {
 
 function modifyWorkshop(state: any, key: string, value: any) {
   // key from components.1.subcomponents.2.data to array
-  let keyArray = key.split("-");
+  let keyArray = key.split('-');
 
   // do not mutate the state in order for react to detect the change
   let newState = JSON.parse(JSON.stringify(state));
@@ -69,12 +70,12 @@ function modifyWorkshop(state: any, key: string, value: any) {
     if (i === keyArray.length - 1) {
       data[keyArray[i]] = JSON.stringify({
         ...JSON.parse(data[keyArray[i]]),
-        ...value
+        ...value,
       });
     } else {
       // if keyArray[i] can be parsed as int then search in the array the object id
       if (!isNaN(parseInt(keyArray[i]))) {
-        data = data.find((obj: any) => obj.order === parseInt(keyArray[i]));
+        data = data.find((obj: Component | Subcomponent | Subsubcomponent) => obj.order === parseInt(keyArray[i]));
       } else {
         data = data[keyArray[i]];
       }
@@ -86,7 +87,7 @@ function modifyWorkshop(state: any, key: string, value: any) {
 
 function addComponent(state: any, key: string, value: any) {
   // key from components-1-subcomponents-2 to array
-  let keyArray = key.split("-");
+  let keyArray = key.split('-');
 
   // do not mutate the state in order for react to detect the change
   let newState = JSON.parse(JSON.stringify(state));
@@ -105,7 +106,7 @@ function addComponent(state: any, key: string, value: any) {
     } else {
       // if keyArray[i] can be parsed as int then search in the array the object id
       if (!isNaN(parseInt(keyArray[i]))) {
-        data = data.find((obj: any) => obj.order === parseInt(keyArray[i]));
+        data = data.find((obj: Component | Subcomponent | Subsubcomponent) => obj.order === parseInt(keyArray[i]));
       } else {
         data = data[keyArray[i]];
       }
@@ -115,10 +116,9 @@ function addComponent(state: any, key: string, value: any) {
   return newState;
 }
 
-function deleteComponent(state: any, key: any, noReorder?: boolean) {
-
+function deleteComponent(state: any, key: string, noReorder?: boolean) {
   // key from components.1.subcomponents.2 to array
-  let keyArray = key.split("-");
+  let keyArray = key.split('-');
 
   // do not mutate the state in order for react to detect the change
   let newState = JSON.parse(JSON.stringify(state));
@@ -129,12 +129,14 @@ function deleteComponent(state: any, key: any, noReorder?: boolean) {
     if (i === keyArray.length - 1) {
       if (!isNaN(parseInt(keyArray[i]))) {
         // get the index of the object to delete
-        let index = data.findIndex((obj: any) => obj.order === parseInt(keyArray[i]));
+        let index = data.findIndex(
+          (obj: Component | Subcomponent | Subsubcomponent) => obj.order === parseInt(keyArray[i]),
+        );
 
-        if(index === -1) return state;
+        if (index === -1) return state;
         data.splice(index, 1);
 
-        if(!noReorder) {
+        if (!noReorder) {
           // remove 1 to all the order after the deleted component
           for (let j = index; j < data.length; j++) {
             data[j].order = j;
@@ -146,17 +148,22 @@ function deleteComponent(state: any, key: any, noReorder?: boolean) {
     } else {
       // if keyArray[i] can be parsed as int then search in the array the object id
       if (!isNaN(parseInt(keyArray[i]))) {
-        data = data.find((obj: any) => obj.order === parseInt(keyArray[i]));
+        data = data.find((obj: Component | Subcomponent | Subsubcomponent) => obj.order === parseInt(keyArray[i]));
       } else {
         data = data[keyArray[i]];
       }
     }
   }
-  
+
   return newState;
 }
 
-function moveComponent(state: any, key: any, position: any, component: any) {
+function moveComponent(
+  state: any,
+  key: string,
+  position: string,
+  component: Component | Subcomponent | Subsubcomponent,
+) {
   // do not mutate the state in order for react to detect the change
   let newState = JSON.parse(JSON.stringify(state));
 
@@ -167,7 +174,7 @@ function moveComponent(state: any, key: any, position: any, component: any) {
   newState = addComponent(newState, position, component);
 
   // reorder the components
-  let keyArray = key.split("-");
+  let keyArray = key.split('-');
 
   // get the data and replace the value in the state
   let data = newState;
@@ -175,9 +182,11 @@ function moveComponent(state: any, key: any, position: any, component: any) {
     if (i === keyArray.length - 1) {
       if (!isNaN(parseInt(keyArray[i]))) {
         // get the index of the object to delete
-        let index = data.findIndex((obj: any) => obj.order === parseInt(keyArray[i]) + 1);
+        let index = data.findIndex(
+          (obj: Component | Subcomponent | Subsubcomponent) => obj.order === parseInt(keyArray[i]) + 1,
+        );
 
-        if(index !== -1) {
+        if (index !== -1) {
           for (let j = index; j < data.length; j++) {
             data[j].order = j;
           }
@@ -186,7 +195,7 @@ function moveComponent(state: any, key: any, position: any, component: any) {
     } else {
       // if keyArray[i] can be parsed as int then search in the array the object id
       if (!isNaN(parseInt(keyArray[i]))) {
-        data = data.find((obj: any) => obj.order === parseInt(keyArray[i]));
+        data = data.find((obj: Component | Subcomponent | Subsubcomponent) => obj.order === parseInt(keyArray[i]));
       } else {
         data = data[keyArray[i]];
       }
@@ -196,33 +205,39 @@ function moveComponent(state: any, key: any, position: any, component: any) {
   return newState;
 }
 
-export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
+export default function WorkshopLiveEdit({ workshop }: { workshop: Workshop }) {
   const [editWorkshop, dispatch] = useReducer(reducer, workshop);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState('');
   // connected flag
   const [connected, setConnected] = useState<boolean>(false);
   const [isInit, setIsInit] = useState<boolean>(false);
-  const [noConnectionText, setNoConnectionText] = useState<string>("Connecting to server");
+  const [noConnectionText, setNoConnectionText] = useState<string>('Connecting to server');
 
-  useEffect(() => (() => { socketInitializer() })() , []);
+  useEffect(
+    () =>
+      (() => {
+        socketInitializer();
+      })(),
+    [],
+  );
 
   useEffect(() => {
     // remove all edit-selected classes
-    let elements = document.querySelectorAll(".edit-selected");
+    let elements = document.querySelectorAll('.edit-selected');
     elements.forEach((element) => {
-      element.classList.remove("edit-selected");
+      element.classList.remove('edit-selected');
     });
 
-    if (selected && selected !== "") {
-      let element = document.querySelector("#" + selected);
+    if (selected && selected !== '') {
+      let element = document.querySelector('#' + selected);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-        element.classList.add("edit-selected");
+        element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        element.classList.add('edit-selected');
       }
     }
 
     setTimeout(() => {
-      setSelected("");
+      setSelected('');
     }, 2000);
   }, [selected]);
 
@@ -230,9 +245,8 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     Prism.highlightAll();
   }, [editWorkshop]);
 
-
   useEffect(() => {
-    setNoConnectionText("Disconnected from server");
+    setNoConnectionText('Disconnected from server');
     // if(isInit) {
     //   setConnected(false);
     //   setTimeout(() => {
@@ -254,144 +268,144 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
     //     }, 3000);
     //   }, 3000);
     // }
-  }, [isInit])
+  }, [isInit]);
 
   async function socketInitializer() {
     // create socket
-    await fetch("/api/socket");
-    socket = io();
+    await fetch('/api/socket');
+    socket = io({ path: '/api/socket/workshops' });
 
     // on connect
-    socket.on("connect", () => {
+    socket.on('connect', () => {
       // set connected flag
       setConnected(true);
 
-      if(!isInit) setIsInit(true);
+      if (!isInit) setIsInit(true);
 
       // join the workshop
-      socket.emit("join-workshop", workshop.id);
+      socket.emit('join-workshop', workshop.id);
     });
 
     // on disconnect
-    socket.on("disconnect", () => {
+    socket.on('disconnect', () => {
       // set connected flag
       setConnected(false);
     });
 
     // on error
-    socket.on("error", (error: any) => {
+    socket.on('error', (error: any) => {
       console.log(error);
     });
 
     // on deleted component
-    socket.on("workshop-delete", (data: any) => {
+    socket.on('workshop-delete', (data: any) => {
       // update the workshop
-      dispatch({ type: "delete", key: data.key });
+      dispatch({ type: 'delete', key: data.key });
     });
 
     // on workshop update
-    socket.on("workshop-modify", (data: any) => {
+    socket.on('workshop-modify', (data: any) => {
       // update the workshop
-      dispatch({ type: "modify", key: data.key, value: data.value });
+      dispatch({ type: 'modify', key: data.key, value: data.value });
     });
 
     // on workshop update
-    socket.on("workshop-add", (data: any) => {
+    socket.on('workshop-add', (data: any) => {
       // update the workshop
-      dispatch({ type: "add", key: data.key, value: data.value });
+      dispatch({ type: 'add', key: data.key, value: data.value });
     });
 
     // on workshop update
-    socket.on("workshop-move", (data: any) => {
+    socket.on('workshop-move', (data: any) => {
       // update the workshop
-      dispatch({ type: "move", key: data.key, position: data.position, component: data.component});
+      dispatch({ type: 'move', key: data.key, position: data.position, component: data.component });
     });
-  };
-
-  function handleWorkshopChange(id: string, value: any) {
-    let idList = id.split("-");
-    let parsedId = idList.slice(0, idList.length - 1).join("-") + "-data";
-
-    socket.emit("workshop-modify-send", { roomId: workshop.id, key: parsedId, value: value });
   }
 
-  function handleClickRendererSelection(e: Event) {
+  function handleWorkshopChange(id: string, value: any) {
+    let idList = id.split('-');
+    let parsedId = idList.slice(0, idList.length - 1).join('-') + '-data';
+
+    socket.emit('workshop-modify-send', { roomId: workshop.id, key: parsedId, value: value });
+  }
+
+  function handleClickRendererSelection(e: MouseEvent<Element>) {
     // get the input element
     let input = e.target as HTMLInputElement;
 
     // get the id of the input element
-    let idList = input.id.split("-");
-    let id = idList.slice(1, idList.length).join("-");
+    let idList = input.id.split('-');
+    let id = idList.slice(1, idList.length).join('-');
 
     setSelected(id);
   }
 
-  function deleteComponent(e: Event) {
+  function deleteComponent(e: MouseEvent<Element>) {
     let element = e.target as HTMLElement;
     // remove the -delete suffix
     let id = element.id.substring(0, element.id.length - 7);
 
     // send to websocket to update the dataidentifier and the other clients
-    socket.emit("workshop-delete-send", { roomId: workshop.id, key: id });
+    socket.emit('workshop-delete-send', { roomId: workshop.id, key: id });
   }
 
   function toolsDragStart(e: React.DragEvent<HTMLDivElement>) {
     let element = e.target as HTMLElement;
-    e.dataTransfer.setData("type", element.dataset.type ? element.dataset.type : "");
-    e.dataTransfer.setData("mode", "create");
-    e.dataTransfer.effectAllowed = "copy";
+    e.dataTransfer.setData('type', element.dataset.type ? element.dataset.type : '');
+    e.dataTransfer.setData('mode', 'create');
+    e.dataTransfer.effectAllowed = 'copy';
     // remove ghost
-    let dragImage = document.createElement("div");
-    dragImage.style.visibility = "hidden";
+    let dragImage = document.createElement('div');
+    dragImage.style.visibility = 'hidden';
     e.dataTransfer.setDragImage(dragImage, 0, 0);
   }
 
   function elementDragStart(e: React.DragEvent<HTMLDivElement>) {
     let element = e.target as HTMLElement;
-    
-    e.dataTransfer.setData("type", element.id);
-    e.dataTransfer.setData("mode", "move");
+
+    e.dataTransfer.setData('type', element.id);
+    e.dataTransfer.setData('mode', 'move');
     // add data clearly to the dataTransfer object to use during DragEnter
-    e.dataTransfer.setData("move", "");
-    e.dataTransfer.setData(element.id, "");
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData('move', '');
+    e.dataTransfer.setData(element.id, '');
+    e.dataTransfer.effectAllowed = 'move';
     // remove ghost
-    let dragImage = document.createElement("div");
-    dragImage.style.visibility = "hidden";
+    let dragImage = document.createElement('div');
+    dragImage.style.visibility = 'hidden';
     e.dataTransfer.setDragImage(dragImage, 0, 0);
   }
 
-  function drop(e: React.DragEvent<HTMLDivElement>) {
+  function drop(e: DragEvent<Element>) {
     e.preventDefault();
 
     let target = e.target as HTMLElement;
-    target.classList.remove("h-8");
+    target.classList.remove('h-8');
 
-    if(target.children[0]) {
-      target.children[0].classList.add("opacity-0");
+    if (target.children[0]) {
+      target.children[0].classList.add('opacity-0');
     }
 
     // get the data
-    let type = e.dataTransfer.getData("type");
-    let mode = e.dataTransfer.getData("mode");
-    let dropZone = parseInt(target.dataset.dropZone ? target.dataset.dropZone : "0");
-    let componentIds = target.dataset.componentIds ? target.dataset.componentIds.split(",") : [];
+    let type = e.dataTransfer.getData('type');
+    let mode = e.dataTransfer.getData('mode');
+    let dropZone = parseInt(target.dataset.dropZone ? target.dataset.dropZone : '0');
+    let componentIds = target.dataset.componentIds ? target.dataset.componentIds.split(',') : [];
 
     let key;
     let order;
     let object;
     let component = getComponent(editWorkshop, type);
-    if(dropZone == 0) {
-      key = "components";
+    if (dropZone == 0) {
+      key = 'components';
       order = componentIds[0] ? parseInt(componentIds[0]) + 1 : 0;
       object = {
-        subcomponents: []
-      }
+        subcomponents: [],
+      };
 
-      if (mode == "move") {
+      if (mode == 'move') {
         // get old position ("component", "subcomponent", "subsubcomponent") using type
-        let oldPosition = type.split("-").length;
-        
+        let oldPosition = type.split('-').length;
+
         // if old position is a subcomponent
         if (oldPosition == 4) {
           // rename subsubcomponents array to subcomponents
@@ -399,21 +413,21 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
           delete component.subsubcomponents;
 
           // add subsubcomponents array to each subcomponent
-          component.subcomponents.forEach((subcomponent: any) => {
+          component.subcomponents.forEach((subcomponent: Subcomponent) => {
             subcomponent.subsubcomponents = [];
-          })
+          });
         }
       }
-    }else if (dropZone == 1) {
-      key = "components-" + componentIds[0] + "-subcomponents";
+    } else if (dropZone == 1) {
+      key = 'components-' + componentIds[0] + '-subcomponents';
       order = componentIds[1] ? parseInt(componentIds[1]) + 1 : 0;
       object = {
-        subsubcomponents: []
-      }
-      
-      if (mode == "move") {
+        subsubcomponents: [],
+      };
+
+      if (mode == 'move') {
         // get old position ("component", "subcomponent", "subsubcomponent")
-        let oldPosition = type.split("-").length;
+        let oldPosition = type.split('-').length;
 
         // if old position is a component
         if (oldPosition == 2) {
@@ -422,26 +436,26 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
           delete component.subcomponents;
         }
       }
-    }else if (dropZone == 2) {
-      key = "components-" + componentIds[0] + "-subcomponents-" + componentIds[1] + "-subsubcomponents";
+    } else if (dropZone == 2) {
+      key = 'components-' + componentIds[0] + '-subcomponents-' + componentIds[1] + '-subsubcomponents';
       order = componentIds[2] ? parseInt(componentIds[2]) + 1 : 0;
-      object = {}
+      object = {};
     }
 
-    if (mode == "create") {
+    if (mode == 'create') {
       // create a new component
       let newComponent = {
         id: uuidv4(),
         order: order,
         type: type,
         data: JSON.stringify(chooseComponentDefaultData(type)),
-        ...object
+        ...object,
       };
-      
+
       // dispatch({ type: "add", key: key, value: newComponent });
 
       // send to websocket to update the dataidentifier and the other clients
-      socket.emit("workshop-add-send", { roomId: workshop.id, key: key, value: newComponent });
+      socket.emit('workshop-add-send', { roomId: workshop.id, key: key, value: newComponent });
     } else {
       component.order = order;
 
@@ -449,52 +463,85 @@ export default function WorkshopLiveEdit({ workshop }: { workshop: any }) {
       // dispatch({ type: "move", key: type, position: key, component: component });
 
       // send to websocket to update the dataidentifier and the other clients
-      socket.emit("workshop-move-send", { roomId: workshop.id, key: type, position: key, component: component });
+      socket.emit('workshop-move-send', { roomId: workshop.id, key: type, position: key, component: component });
     }
   }
 
   return (
     <>
-      {!connected ? <div className="fixed top-0 left-0 z-50 flex flex-col items-center justify-center w-full h-screen bg-gray-900 bg-opacity-75">
-        <LoadingLogo stroke="#FB8042" fill="none" />
-        <p className="font-sans text-lg text-white bold">{noConnectionText}</p>
-      </div> : <></>}
-    
+      {!connected ? (
+        <div className="fixed top-0 left-0 z-50 flex flex-col items-center justify-center w-full h-screen bg-gray-900 bg-opacity-75">
+          <LoadingLogo stroke="#FB8042" fill="none" />
+          <p className="font-sans text-lg text-white bold">{noConnectionText}</p>
+        </div>
+      ) : (
+        <></>
+      )}
+
       <div className="relative w-12">
         <div className="fixed left-0 flex flex-col items-center w-12 h-screen gap-4 px-1 py-2 bg-gray-600">
-          {listComponent().map((component: any, index: number) => {
+          {listComponent().map((component: ComponentTypeFromList, index: number) => {
             return (
-              <div key={index} onDragStart={toolsDragStart} data-type={component.name} className="flex items-center justify-center font-bold text-white bg-gray-900 rounded-lg cursor-pointer w-9 h-9" draggable>{component.short}</div>
+              <div
+                key={index}
+                onDragStart={toolsDragStart}
+                data-type={component.name}
+                className="flex items-center justify-center font-bold text-white bg-gray-900 rounded-lg cursor-pointer w-9 h-9"
+                draggable>
+                {component.short}
+              </div>
             );
           })}
         </div>
       </div>
       <div className="flex w-full">
         <div className="flex flex-col w-1/2 p-5">
-          <WorkshopEditInput id="title" title="Nom du Workshop" dataField="wsmaintitle" value={{}} placeholder="Feature 1, Feature 2" data={editWorkshop?.title} events={[handleWorkshopChange]} />
-          <WorkshopDropZone id={'drop'} h={"h-6"} workshop={editWorkshop} drop={drop} />
-          {editWorkshop.components.map((component: any) => {
-            let identifier = "components-" + component.order;
+          <WorkshopEditInput
+            id="title"
+            title="Nom du Workshop"
+            dataField="wsmaintitle"
+            value={{}}
+            placeholder="Feature 1, Feature 2"
+            data={editWorkshop?.title}
+            events={[handleWorkshopChange]}
+          />
+          <WorkshopDropZone id={'drop'} h={'h-6'} workshop={editWorkshop} drop={drop} />
+          {editWorkshop.components.map((component: Component) => {
+            let identifier = 'components-' + component.order;
             return (
-              <div key={"component" + component.order} className="flex flex-col">
+              <div key={'component' + component.order} className="flex flex-col">
                 {chooseComponentEdit(component, identifier, [handleWorkshopChange, deleteComponent, elementDragStart])}
                 <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop} />
-                {component.subcomponents.map((subcomponent: any) => {
-                  identifier = "components-" + component.order + "-subcomponents-" + subcomponent.order;
+                {component.subcomponents.map((subcomponent: Subcomponent) => {
+                  identifier = 'components-' + component.order + '-subcomponents-' + subcomponent.order;
                   return (
-                    <div key={"subcomponents" + subcomponent.order} className="flex flex-col">
+                    <div key={'subcomponents' + subcomponent.order} className="flex flex-col">
                       <div className="flex ml-12">
-                        {chooseComponentEdit(subcomponent, identifier, [handleWorkshopChange, deleteComponent, elementDragStart])}
+                        {chooseComponentEdit(subcomponent, identifier, [
+                          handleWorkshopChange,
+                          deleteComponent,
+                          elementDragStart,
+                        ])}
                       </div>
                       <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop} />
-                      {subcomponent.subsubcomponents.map((subsubcomponent: any) => {
-                        identifier = "components-" + component.order + "-subcomponents-" + subcomponent.order + "-subsubcomponents-" + subsubcomponent.order;
+                      {subcomponent.subsubcomponents.map((subsubcomponent: Subsubcomponent) => {
+                        identifier =
+                          'components-' +
+                          component.order +
+                          '-subcomponents-' +
+                          subcomponent.order +
+                          '-subsubcomponents-' +
+                          subsubcomponent.order;
                         return (
-                          <div key={"subsubcomponents" + subsubcomponent.order} className="flex flex-col">
+                          <div key={'subsubcomponents' + subsubcomponent.order} className="flex flex-col">
                             <div className="flex ml-24">
-                              {chooseComponentEdit(subsubcomponent, identifier, [handleWorkshopChange, deleteComponent, elementDragStart])}
+                              {chooseComponentEdit(subsubcomponent, identifier, [
+                                handleWorkshopChange,
+                                deleteComponent,
+                                elementDragStart,
+                              ])}
                             </div>
-                            <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop}/>
+                            <WorkshopDropZone id={'drop-' + identifier} workshop={editWorkshop} drop={drop} />
                           </div>
                         );
                       })}
