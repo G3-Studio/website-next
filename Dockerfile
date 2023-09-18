@@ -13,6 +13,8 @@ WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
+RUN npm i pnpm -g
+
 ENV NEXT_TELEMETRY_DISABLED 1
 
 #RUN npx prisma migrate deploy
