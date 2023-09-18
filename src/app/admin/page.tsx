@@ -17,7 +17,7 @@ export default function AdminPage() {
   }
 
   return (
-    <Layout title={'Page Admin'} session={session}>
+    <Layout title={'Page Admin'} session={session ? session : undefined}>
       <div className="flex flex-col">
         <h1>Admin</h1>
         <p>Protected content</p>
