@@ -3,6 +3,7 @@
 ### Prerequisites
 
 * [Node.js](https://nodejs.org/en/)
+* [Pnpm](https://pnpm.io/en/)
 
 ### Installing
 
@@ -12,7 +13,7 @@ git clone
 ```
 2. Install NPM packages
 ```sh
-npm install
+pnpm install
 ```
 
 ### Database
