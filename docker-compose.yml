@@ -12,6 +12,8 @@ services:
     networks:
       - gcube-network
     restart: unless-stopped
+    ports:
+      - '12101:3306'
   app:
     image: gcube-docker
     container_name: gcube-app-prod
