@@ -2,6 +2,8 @@ FROM node:18-alpine AS dependencies
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+RUN npm i pnpm -g
+
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
