@@ -11,6 +11,7 @@ services:
       - ./data:/var/lib/mysql
     networks:
       - gcube-network
+    restart: unless-stopped
   app:
     image: gcube-docker
     container_name: gcube-app-prod
