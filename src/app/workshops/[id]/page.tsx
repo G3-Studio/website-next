@@ -32,6 +32,8 @@ export default async function Workshop({ params }: { params: { id: number } }) {
     },
   });
 
+  if (!workshop) return <div>Erreur 404</div>;
+
   return (
     <WorkshopClient workshop={workshop}>
       <div className="flex justify-center w-full min-h-screen p-8 bg-gray-100 content">
